@@ -1,0 +1,37 @@
+1.composer create-project --prefer-dist laravel/laravel blog "5.8.*"
+2.- composer require --dev barryvdh/laravel-ide-helper
+    //*https://github.com/barryvdh/laravel-ide-helper*//
+  -   composer.json
+         "post-update-cmd": [
+                "Illuminate\\Foundation\\ComposerScripts::postInstall",
+                "php artisan ide-helper:generate",
+                "php artisan ide-helper:meta"
+            ]
+3.php artisan make:auth  -  base auth from laravel
+    //*https://laravel.com/docs/5.8/authentication*//
+4.php artisan migrate
+5.create folder for model
+   - edit auth.conf
+       'providers' => [
+           'users' => [
+               'driver' => 'eloquent',
+               'model' => App\Models\User::class,
+           ]
+   - RegisterController edit models
+6.create user controller group
+   - php artisan make:controller User/BaseController
+   - php artisan make:controller User/ProfileController
+7. create Profile model
+  - php artisan make:model Models/Profile
+8. on Dashboard creat link
+    - profile;
+9. create observer for profile and register
+10 php artisan make:model Models/Group -m
+11.php artisan make:model Models/UserGroup -m
+12.php artisan migrate:refresh --seed
+13.php artisan make:controller User/GroupController -r
+
+
+
+
+
