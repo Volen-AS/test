@@ -1,0 +1,63 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./dev/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./public:/project/public:cached
+    links:
+      - test
+    networks:
+      - frontend
+  test:
+    build: ./
+    volumes:
+      - ./:/project:cached
+    working_dir: /project
+    links:
+      - redis
+    networks:
+      - frontend
+      - backend
+    environment:
+      APP_ENV: local
+      APP_KEY: "base64:05VNDWbv5axaVCzWrtTBLMV1T1Ex8ML4dNzWINrWXHY="
+      REDIS_CLIENT: phpredis
+      REDIS_HOST: redis
+      REDIS_DB: 0
+      BROADCAST_DRIVER: redis
+      CACHE_DRIVER: redis
+      SESSION_DRIVER: redis
+      QUEUE_DRIVER: redis
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_DATABASE: testdb
+      DB_USERNAME: root
+      DB_PASSWORD: testpassword
+      LOG_CHANNEL: errorlog
+      LOG_LEVEL: debug
+  redis:
+    image: redis:6.0.8-buster
+    expose:
+      - "6379"
+    command: [sh, -c, "rm -f /data/dump.rdb && redis-server"]  # disable persistence
+    networks:
+      - backend
+  mysql:
+    image: mysql:8.0.17
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: testdb
+      MYSQL_ROOT_PASSWORD: testpassword
+    volumes:
+      - ./:/project:ro
+    working_dir: /project
+    networks:
+      - backend
+
+networks:
+  frontend:
+  backend:
